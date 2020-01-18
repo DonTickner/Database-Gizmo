@@ -11,12 +11,16 @@ namespace Database_Gizmo.Structure
 {
     public class GizmoViewModel
     {
-        private List<ConnectionStringSettings> _connectionStringSettings;
+        #region Connections
+
+        private const string SQLClientProviderName = "System.Data.SqlClient";
+
+        private List<ConfiguredConnection> _connectionStringSettings;
 
         /// <summary>
         /// The list of all available Connections Strings configured via the App.Config file.
         /// </summary>
-        public List<ConnectionStringSettings> ConnectionStrings
+        public List<ConfiguredConnection> ConnectionStrings
         {
             get
             {
@@ -30,9 +34,11 @@ namespace Database_Gizmo.Structure
             }
         }
 
+        #endregion
+
         public GizmoViewModel()
         {
-            _connectionStringSettings = new List<ConnectionStringSettings>();
+            _connectionStringSettings = new List<ConfiguredConnection>();
 
             LoadConfiguration();
         }
@@ -42,7 +48,15 @@ namespace Database_Gizmo.Structure
         /// </summary>
         private void LoadConfiguration()
         {
-            LoadConnectionStringSettings();
+            try
+            {
+                LoadConnectionStringSettings();
+            }
+            catch (Exception e)
+            {
+                ShowErrorMessage(e, "load connection strings.");
+                throw;
+            }
         }
 
         /// <summary>
@@ -62,7 +76,12 @@ namespace Database_Gizmo.Structure
                     continue;
                 }
 
-                _connectionStringSettings.Add(connectionStringSettings);
+                if (!string.Equals(SQLClientProviderName, connectionStringSettings.ProviderName))
+                {
+                    continue;
+                }
+
+                _connectionStringSettings.Add(new ConfiguredConnection(connectionStringSettings));
             }
 
             SignalDataBindingChange(ConnectionStrings);
@@ -83,6 +102,21 @@ namespace Database_Gizmo.Structure
         private void SignalDataBindingChange(object property)
         {
             OnPropertyChanged(nameof(property));
+        }
+
+        #endregion
+
+        #region UI
+
+        /// <summary>
+        /// Displays a simple error message box.
+        /// </summary>
+        /// <param name="e">The exception that was thrown when the error occured.</param>
+        /// <param name="action">The name of the action that was being completed when the error occurred. e.g. 'Load Connections.'</param>
+        private void ShowErrorMessage(Exception e, string action)
+        {
+            MessageBox.Show(
+                $"An error occurred while attempting to {action}.{Environment.NewLine}The error message is:{Environment.NewLine}{e.Message}", $"Error: {action}", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         #endregion
