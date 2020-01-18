@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database Gizmo", "Database Gizmo\Database Gizmo.csproj", "{4F25028F-8A47-4E5A-B38B-F719E51DE30A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F25028F-8A47-4E5A-B38B-F719E51DE30A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F25028F-8A47-4E5A-B38B-F719E51DE30A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F25028F-8A47-4E5A-B38B-F719E51DE30A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F25028F-8A47-4E5A-B38B-F719E51DE30A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {45DCE807-1F43-4F61-A2B8-A91B254E07CB}
+	EndGlobalSection
+EndGlobal
