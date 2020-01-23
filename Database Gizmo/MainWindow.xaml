@@ -3,11 +3,39 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Database_Gizmo"
         mc:Ignorable="d"
         Loaded="MainWindow_OnLoaded"
-        Title="Gizmo" Height="450" Width="800">
+        Title="Gizmo"
+        Height="450"
+        Width="800">
     <Grid>
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <ComboBox
+            Name="DatabaseNameComboBox"
+            Grid.Column="1"
+            Grid.Row="1"
+            Width="500"
+            ItemsSource="{Binding DatabaseNames}"
+            SelectedItem="{Binding CurrentDatabase, Mode=TwoWay}"/>
+        <Button
+            Grid.Column="1"
+            Grid.Row="2"
+            Content="Refresh Database List"
+            Click="ButtonBase_OnClick"/>
+        <ListView
+            Grid.Column="1"
+            Grid.Row="3"
+            Height="Auto"
+            ItemsSource="{Binding DatabaseNames}"
+            />
     </Grid>
 </Window>

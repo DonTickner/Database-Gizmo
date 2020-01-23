@@ -22,26 +22,49 @@ namespace Database_Gizmo
     /// </summary>
     public partial class MainWindow : Window
     {
+        public GizmoViewModel GizmoViewModel;
         public MainWindow()
         {
+            this.DataContext = GizmoViewModel = new GizmoViewModel();
+
             InitializeComponent();
         }
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = new GizmoViewModel();
-            SelectConnectionStringForm connectionStringForm = new SelectConnectionStringForm(this.DataContext as GizmoViewModel);
-            connectionStringForm.ShowDialog();
-
-            if (connectionStringForm.DialogResult == null)
+            if (!GizmoViewModel.ConnectionStrings.Any())
             {
+                MessageBox.Show(
+                    "No ConnectionStrings have been configured. Please configure a ConnectionString and re-start the application.",
+                    "No Connection Strings", MessageBoxButton.OK, MessageBoxImage.Error);
                 Application.Current.Shutdown();
             }
 
-            if (!connectionStringForm.DialogResult.Value)
+            if (GizmoViewModel.ConnectionStrings.Count() > 1)
             {
-                Application.Current.Shutdown();
+                SelectConnectionStringForm connectionStringForm = new SelectConnectionStringForm(GizmoViewModel);
+                connectionStringForm.ShowDialog();
+
+                if (connectionStringForm.DialogResult == null)
+                {
+                    Application.Current.Shutdown();
+                }
+
+                if (!connectionStringForm.DialogResult.Value)
+                {
+                    Application.Current.Shutdown();
+                }
+
+                GizmoViewModel.SetCurrentConnection(connectionStringForm.ConfiguredConnection);
+                return;
             }
+
+            GizmoViewModel.SetCurrentConnection(GizmoViewModel.ConnectionStrings.FirstOrDefault());
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            GizmoViewModel.TestMethod();
         }
     }
 }

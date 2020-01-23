@@ -52,7 +52,8 @@
             Grid.Column="2"
             Grid.Row="2"
             Margin="0, 0, 5, 0"
-            Height="20"/>
+            Height="20"
+            Click="SelectConnectionButton_OnClick"/>
         <Button
             VerticalAlignment="Center"
             Width="100"

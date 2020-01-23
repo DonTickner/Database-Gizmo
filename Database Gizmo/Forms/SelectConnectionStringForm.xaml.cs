@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
+using System.Transactions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -21,6 +22,8 @@ namespace Database_Gizmo.Forms
     /// </summary>
     public partial class SelectConnectionStringForm : ExtendedWindow
     {
+        private GizmoViewModel _gizmoViewModel;
+
         private ConfiguredConnection _configuredConnection;
         /// <summary>
         /// The Dialog's currently selected <see cref="Structure.ConfiguredConnection"/>
@@ -32,7 +35,9 @@ namespace Database_Gizmo.Forms
 
         public SelectConnectionStringForm(GizmoViewModel viewModel)
         {
-            this.DataContext = viewModel;
+            _gizmoViewModel = viewModel;
+            this.DataContext = _gizmoViewModel;
+
             InitializeComponent();
         }
 
@@ -47,11 +52,14 @@ namespace Database_Gizmo.Forms
             if (ConnectionsListView.SelectedItem is ConfiguredConnection selectedConfiguredConnection)
             {
                 _configuredConnection = selectedConfiguredConnection;
+
                 TestConnectionButton.IsEnabled = true;
+                SelectConnectionButton.IsEnabled = true;
                 return;
             }
 
             TestConnectionButton.IsEnabled = false;
+            SelectConnectionButton.IsEnabled = false;
             _configuredConnection = null;
         }
 
@@ -67,25 +75,41 @@ namespace Database_Gizmo.Forms
                 ShowErrorMessage("Please select a connection from the List View before attempt to test.", "No Connection Selected");
             }
 
+            SQLConnectionTestResult testResult = _gizmoViewModel.TestSQLConnection(_configuredConnection.ConnectionString);
 
-            try
+            if (testResult.Successful)
             {
-                SqlConnection testConnection = new SqlConnection(_configuredConnection.ConnectionString);
-
-                if (testConnection.State == ConnectionState.Open)
-                {
-                    MessageBox.Show("Connection tested successfully!", "Success!", MessageBoxButton.OK,
-                        MessageBoxImage.Information);
-
-                    return;
-                }
-
-                ShowErrorMessage($"An unknown error occurred. Please check the connection string and try again.", "Unknown Error");
+                MessageBox.Show($"{testResult.ResultMessage}", "Test successful!", MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
             }
-            catch (Exception exception)
-            {
-                ShowErrorMessage(exception, "test connection");
-            }
+
+            ShowErrorMessage($"The test was not successful. The error message is:{Environment.NewLine}{testResult.ResultMessage}", "Test Failed");
         }
+
+        private void SelectConnectionButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (!SelectConnectionButton.IsEnabled)
+            {
+                return;
+            }
+
+            if (null == _configuredConnection)
+            {
+                ShowErrorMessage("Please select a connection from the List View before attempt to test.", "No Connection Selected");
+            }
+
+            SQLConnectionTestResult testResult = _gizmoViewModel.TestSQLConnection(_configuredConnection.ConnectionString);
+
+            if (testResult.Successful)
+            {
+                this.DialogResult = true;
+                this.Close();
+                return;
+            }
+
+            ShowErrorMessage($"There was an error with the connection. Please check the connection string and try again. The error returned is:{Environment.NewLine}{testResult.ResultMessage}", "Connection Error");
+        }
+
     }
 }
